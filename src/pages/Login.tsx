@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Leaf } from 'lucide-react';
 
 const Login = () => {
+  console.log('Login component rendering');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
