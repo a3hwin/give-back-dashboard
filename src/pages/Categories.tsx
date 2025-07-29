@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ImageUpload } from '@/components/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
-import { mockCategories, Category, mockItems } from '@/data/mockData';
+import { mockCategories, Category, SubCategory, mockItems } from '@/data/mockData';
 import { Plus, ChevronDown, ChevronRight, Edit, Package, Star } from 'lucide-react';
 
 const Categories = () => {
@@ -19,7 +20,15 @@ const Categories = () => {
   const [newCategory, setNewCategory] = useState({
     title: '',
     description: '',
-    icon: '',
+    image: '',
+    points: 1
+  });
+  const [isAddSubCategoryDialogOpen, setIsAddSubCategoryDialogOpen] = useState(false);
+  const [selectedCategoryForSub, setSelectedCategoryForSub] = useState<string>('');
+  const [newSubCategory, setNewSubCategory] = useState({
+    title: '',
+    description: '',
+    image: '',
     points: 1
   });
   const { toast } = useToast();
@@ -33,7 +42,7 @@ const Categories = () => {
   };
 
   const handleAddCategory = () => {
-    if (!newCategory.title || !newCategory.description || !newCategory.icon) {
+    if (!newCategory.title || !newCategory.description || !newCategory.image) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields.",
@@ -46,18 +55,54 @@ const Categories = () => {
       id: String(categories.length + 1),
       title: newCategory.title,
       description: newCategory.description,
-      icon: newCategory.icon,
+      image: newCategory.image,
       points: newCategory.points,
-      itemCount: 0
+      itemCount: 0,
+      subCategories: []
     };
 
     setCategories([...categories, category]);
-    setNewCategory({ title: '', description: '', icon: '', points: 1 });
+    setNewCategory({ title: '', description: '', image: '', points: 1 });
     setIsAddDialogOpen(false);
     
     toast({
       title: "Success!",
       description: `Category "${category.title}" has been added.`,
+    });
+  };
+
+  const handleAddSubCategory = () => {
+    if (!newSubCategory.title || !newSubCategory.description || !newSubCategory.image) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const subCategory: SubCategory = {
+      id: `${selectedCategoryForSub}-${Date.now()}`,
+      title: newSubCategory.title,
+      description: newSubCategory.description,
+      image: newSubCategory.image,
+      points: newSubCategory.points
+    };
+
+    setCategories(prev => 
+      prev.map(cat => 
+        cat.id === selectedCategoryForSub 
+          ? { ...cat, subCategories: [...(cat.subCategories || []), subCategory] }
+          : cat
+      )
+    );
+    
+    setNewSubCategory({ title: '', description: '', image: '', points: 1 });
+    setIsAddSubCategoryDialogOpen(false);
+    
+    toast({
+      title: "Success!",
+      description: `Sub-category "${subCategory.title}" has been added.`,
     });
   };
 
@@ -121,16 +166,12 @@ const Categories = () => {
                   placeholder="Brief description of the category"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="icon">Icon (Emoji) *</Label>
-                <Input
-                  id="icon"
-                  value={newCategory.icon}
-                  onChange={(e) => setNewCategory({...newCategory, icon: e.target.value})}
-                  placeholder="e.g., 🪑"
-                  maxLength={2}
-                />
-              </div>
+              <ImageUpload
+                value={newCategory.image}
+                onChange={(value) => setNewCategory({...newCategory, image: value})}
+                label="Category Image *"
+                placeholder="Upload category image"
+              />
               <div className="space-y-2">
                 <Label htmlFor="points">Points</Label>
                 <Input
@@ -148,6 +189,63 @@ const Categories = () => {
                 </Button>
                 <Button onClick={handleAddCategory} className="bg-gradient-eco hover:opacity-90">
                   Add Category
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Sub-Category Dialog */}
+        <Dialog open={isAddSubCategoryDialogOpen} onOpenChange={setIsAddSubCategoryDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Sub-Category</DialogTitle>
+              <DialogDescription>
+                Create a new sub-category within the selected category.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="sub-title">Title *</Label>
+                <Input
+                  id="sub-title"
+                  value={newSubCategory.title}
+                  onChange={(e) => setNewSubCategory({...newSubCategory, title: e.target.value})}
+                  placeholder="e.g., Indoor Furniture"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sub-description">Description *</Label>
+                <Textarea
+                  id="sub-description"
+                  value={newSubCategory.description}
+                  onChange={(e) => setNewSubCategory({...newSubCategory, description: e.target.value})}
+                  placeholder="Brief description of the sub-category"
+                />
+              </div>
+              <ImageUpload
+                value={newSubCategory.image}
+                onChange={(value) => setNewSubCategory({...newSubCategory, image: value})}
+                label="Sub-Category Image *"
+                placeholder="Upload sub-category image"
+              />
+              <div className="space-y-2">
+                <Label htmlFor="sub-points">Points</Label>
+                <Input
+                  id="sub-points"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={newSubCategory.points}
+                  onChange={(e) => setNewSubCategory({...newSubCategory, points: parseInt(e.target.value) || 1})}
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setIsAddSubCategoryDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAddSubCategory} className="bg-gradient-eco hover:opacity-90">
+                  Add Sub-Category
                 </Button>
               </div>
             </div>
@@ -171,7 +269,11 @@ const Categories = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="text-2xl">{category.icon}</div>
+                        <img 
+                          src={category.image} 
+                          alt={category.title}
+                          className="w-12 h-12 rounded object-cover"
+                        />
                         <div>
                           <CardTitle className="flex items-center space-x-3">
                             <span>{category.title}</span>
@@ -189,6 +291,20 @@ const Categories = () => {
                         <div className="flex items-center space-x-2 text-muted-foreground">
                           <Package className="h-4 w-4" />
                           <span className="text-sm">{category.itemCount} items</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCategoryForSub(category.id);
+                              setIsAddSubCategoryDialogOpen(true);
+                            }}
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Add Sub
+                          </Button>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Label htmlFor={`points-${category.id}`} className="text-sm">Points:</Label>
@@ -214,8 +330,37 @@ const Categories = () => {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <CardContent className="pt-0">
-                    <div className="border-t pt-4">
-                      <h4 className="font-medium mb-3 text-foreground">Items in this category:</h4>
+                    <div className="border-t pt-4 space-y-6">
+                      {/* Sub-categories */}
+                      {category.subCategories && category.subCategories.length > 0 && (
+                        <div>
+                          <h4 className="font-medium mb-3 text-foreground">Sub-categories:</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                            {category.subCategories.map((subCategory) => (
+                              <div key={subCategory.id} className="p-3 bg-muted rounded-lg border">
+                                <div className="flex items-start space-x-3">
+                                  <img 
+                                    src={subCategory.image} 
+                                    alt={subCategory.title}
+                                    className="w-8 h-8 rounded object-cover"
+                                  />
+                                  <div className="flex-1">
+                                    <h5 className="font-medium text-sm text-foreground">{subCategory.title}</h5>
+                                    <p className="text-xs text-muted-foreground mt-1">{subCategory.description}</p>
+                                    <Badge variant="secondary" className="mt-2 text-xs bg-eco-green-light text-eco-green">
+                                      <Star className="h-3 w-3 mr-1" />
+                                      {subCategory.points} pts
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <h4 className="font-medium mb-3 text-foreground">Items in this category:</h4>
                       {categoryItems.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                           {categoryItems.map((item) => (
@@ -234,9 +379,10 @@ const Categories = () => {
                             </div>
                           ))}
                         </div>
-                      ) : (
-                        <p className="text-muted-foreground text-sm">No items in this category yet.</p>
-                      )}
+                        ) : (
+                          <p className="text-muted-foreground text-sm">No items in this category yet.</p>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </CollapsibleContent>

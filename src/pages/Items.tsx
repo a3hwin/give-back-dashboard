@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ImagePreviewDialog } from '@/components/ImagePreviewDialog';
+import { useToast } from '@/hooks/use-toast';
 import { mockItems, Item } from '@/data/mockData';
-import { Search, Package, MapPin, Calendar, User } from 'lucide-react';
+import { Search, Package, MapPin, Calendar, User, Edit, Trash2 } from 'lucide-react';
 
 const Items = () => {
   const [items, setItems] = useState<Item[]>(mockItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const { toast } = useToast();
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,6 +41,21 @@ const Items = () => {
   };
 
   const categories = Array.from(new Set(items.map(item => item.category)));
+
+  const handleEditItem = (itemId: string) => {
+    toast({
+      title: "Edit Item",
+      description: "Item editing functionality would be implemented here.",
+    });
+  };
+
+  const handleDeleteItem = (itemId: string) => {
+    setItems(prev => prev.filter(item => item.id !== itemId));
+    toast({
+      title: "Item Deleted",
+      description: "Item has been successfully removed.",
+    });
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -114,6 +133,7 @@ const Items = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Image</TableHead>
                   <TableHead>Item Name</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead>Category</TableHead>
@@ -122,11 +142,24 @@ const Items = () => {
                   <TableHead>Date Listed</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Requests</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredItems.map((item) => (
                   <TableRow key={item.id} className="hover:bg-accent/50 transition-colors">
+                    <TableCell>
+                      {item.image ? (
+                        <ImagePreviewDialog 
+                          imageUrl={item.image} 
+                          altText={item.name}
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                          <Package className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="font-medium text-foreground">{item.name}</div>
                     </TableCell>
@@ -174,6 +207,24 @@ const Items = () => {
                         ) : (
                           <span className="text-muted-foreground text-sm">-</span>
                         )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditItem(item.id)}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteItem(item.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>

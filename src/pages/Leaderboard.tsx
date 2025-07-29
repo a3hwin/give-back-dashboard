@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { BadgeMaster } from '@/components/BadgeMaster';
 import { mockUsers, User } from '@/data/mockData';
 import { Trophy, Star, Gift, Award, Crown, Medal } from 'lucide-react';
 
@@ -50,6 +51,9 @@ const Leaderboard = () => {
           Top contributors making a difference in their communities
         </p>
       </div>
+
+      {/* Badge Master */}
+      <BadgeMaster />
 
       {/* Filters */}
       <Card className="shadow-card">

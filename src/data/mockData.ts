@@ -1,10 +1,19 @@
+export interface SubCategory {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  points: number;
+}
+
 export interface Category {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  image: string;
   points: number;
   itemCount: number;
+  subCategories?: SubCategory[];
 }
 
 export interface Item {
@@ -17,6 +26,7 @@ export interface Item {
   status: 'Listed' | 'Requested' | 'Freecycled';
   donorName: string;
   requestCount?: number;
+  image?: string;
 }
 
 export interface User {
@@ -55,50 +65,82 @@ export const mockCategories: Category[] = [
   {
     id: '1',
     title: 'Furniture',
-    description: 'Tables, chairs, sofas, and other household furniture',
-    icon: '🪑',
+    description: 'Tables, chairs, sofas, and other home furniture',
+    image: 'https://images.unsplash.com/photo-1721322800607-80112131f5a1?auto=format&fit=crop&w=800&q=80',
     points: 5,
-    itemCount: 142
+    itemCount: 12,
+    subCategories: [
+      {
+        id: '1-1',
+        title: 'Indoor Furniture',
+        description: 'Living room, bedroom, and office furniture',
+        image: 'https://images.unsplash.com/photo-1721322800607-80112131f5a1?auto=format&fit=crop&w=800&q=80',
+        points: 5
+      },
+      {
+        id: '1-2',
+        title: 'Outdoor Furniture',
+        description: 'Patio, garden, and outdoor seating',
+        image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80',
+        points: 6
+      }
+    ]
   },
   {
     id: '2',
     title: 'Electronics',
-    description: 'Phones, laptops, gadgets, and electronic devices',
-    icon: '📱',
+    description: 'Phones, laptops, tablets, and electronic gadgets',
+    image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=800&q=80',
     points: 8,
-    itemCount: 89
+    itemCount: 8,
+    subCategories: [
+      {
+        id: '2-1',
+        title: 'Mobile Devices',
+        description: 'Phones, tablets, and accessories',
+        image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=800&q=80',
+        points: 10
+      },
+      {
+        id: '2-2',
+        title: 'Computers',
+        description: 'Laptops, desktops, and peripherals',
+        image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=800&q=80',
+        points: 12
+      }
+    ]
   },
   {
     id: '3',
     title: 'Books',
-    description: 'Novels, textbooks, magazines, and educational materials',
-    icon: '📚',
+    description: 'Educational books, novels, magazines, and publications',
+    image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80',
     points: 2,
-    itemCount: 234
+    itemCount: 15
   },
   {
     id: '4',
     title: 'Clothing',
     description: 'Shirts, pants, dresses, shoes, and accessories',
-    icon: '👕',
+    image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=80',
     points: 3,
-    itemCount: 167
+    itemCount: 20
   },
   {
     id: '5',
-    title: 'Kitchen',
-    description: 'Cookware, utensils, appliances, and kitchen supplies',
-    icon: '🍳',
+    title: 'Kitchen Items',
+    description: 'Utensils, appliances, cookware, and kitchen accessories',
+    image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800&q=80',
     points: 4,
-    itemCount: 98
+    itemCount: 10
   },
   {
     id: '6',
-    title: 'Toys & Games',
-    description: 'Children toys, board games, and entertainment items',
-    icon: '🧸',
-    points: 3,
-    itemCount: 76
+    title: 'Sports Equipment',
+    description: 'Exercise gear, sports equipment, and outdoor activities',
+    image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80',
+    points: 6,
+    itemCount: 7
   }
 ];
 
@@ -112,7 +154,8 @@ export const mockItems: Item[] = [
     datePosted: '2024-01-15',
     status: 'Listed',
     donorName: 'Sarah Chen',
-    requestCount: 3
+    requestCount: 3,
+    image: 'https://images.unsplash.com/photo-1721322800607-80112131f5a1?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '2',
@@ -123,7 +166,8 @@ export const mockItems: Item[] = [
     datePosted: '2024-01-14',
     status: 'Requested',
     donorName: 'Mike Johnson',
-    requestCount: 8
+    requestCount: 8,
+    image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '3',
@@ -133,7 +177,8 @@ export const mockItems: Item[] = [
     location: 'Austin, TX',
     datePosted: '2024-01-12',
     status: 'Freecycled',
-    donorName: 'Emma Wilson'
+    donorName: 'Emma Wilson',
+    image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '4',
@@ -144,17 +189,19 @@ export const mockItems: Item[] = [
     datePosted: '2024-01-10',
     status: 'Listed',
     donorName: 'Alex Rodriguez',
-    requestCount: 2
+    requestCount: 2,
+    image: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: '5',
     name: 'Coffee Maker',
     description: 'Automatic drip coffee maker, works perfectly. Great for morning coffee.',
-    category: 'Kitchen',
+    category: 'Kitchen Items',
     location: 'Portland, OR',
     datePosted: '2024-01-09',
     status: 'Freecycled',
-    donorName: 'Lisa Park'
+    donorName: 'Lisa Park',
+    image: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
