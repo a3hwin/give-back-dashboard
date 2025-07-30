@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockTransactions, Transaction } from '@/data/mockData';
-import { Search, ArrowRightLeft, Calendar, Star, User, Package } from 'lucide-react';
+import { Search, ArrowRightLeft, Calendar, Star, User, Package, Download, FileText } from 'lucide-react';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
@@ -94,7 +95,7 @@ const Transactions = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Search Transactions</label>
               <Input
@@ -118,6 +119,16 @@ const Transactions = () => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="flex space-x-2">
+            <Button variant="outline" size="sm" onClick={() => console.log('Exporting to CSV...')}>
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => console.log('Exporting to PDF...')}>
+              <FileText className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
           </div>
         </CardContent>
       </Card>

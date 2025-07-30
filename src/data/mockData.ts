@@ -74,7 +74,7 @@ export const mockCategories: Category[] = [
         id: '1-1',
         title: 'Indoor Furniture',
         description: 'Living room, bedroom, and office furniture',
-        image: 'https://images.unsplash.com/photo-1721322800607-80112131f5a1?auto=format&fit=crop&w=800&q=80',
+        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
         points: 5
       },
       {

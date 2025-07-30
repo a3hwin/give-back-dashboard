@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getStatsData } from '@/data/mockData';
+import { Button } from '@/components/ui/button';
+import { getStatsData, mockItems, mockTransactions } from '@/data/mockData';
 import { Users, Package, ArrowRightLeft, TrendingUp } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
@@ -79,6 +80,71 @@ const Dashboard = () => {
             <p className="text-xs text-muted-foreground">
               +3% from last month
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Listings */}
+        <Card className="shadow-card">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Listings</CardTitle>
+              <CardDescription>Latest items added to the platform</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => window.location.href = '/items'}>
+              View All
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {mockItems.slice(0, 3).map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Package className="h-4 w-4 text-eco-green" />
+                    <div>
+                      <p className="font-medium text-sm text-foreground">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">{item.category} • {item.location}</p>
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(item.datePosted).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Transactions */}
+        <Card className="shadow-card">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Transactions</CardTitle>
+              <CardDescription>Latest completed exchanges</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => window.location.href = '/transactions'}>
+              View All
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {mockTransactions.slice(0, 3).map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <ArrowRightLeft className="h-4 w-4 text-eco-green" />
+                    <div>
+                      <p className="font-medium text-sm text-foreground">{transaction.itemName}</p>
+                      <p className="text-xs text-muted-foreground">{transaction.donor} → {transaction.recipient}</p>
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(transaction.date).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>

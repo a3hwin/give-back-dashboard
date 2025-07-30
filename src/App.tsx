@@ -13,6 +13,7 @@ import Items from "./pages/Items";
 import Transactions from "./pages/Transactions";
 import Leaderboard from "./pages/Leaderboard";
 import Admins from "./pages/Admins";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => {
               <Route path="transactions" element={<Transactions />} />
               <Route path="leaderboard" element={<Leaderboard />} />
               <Route path="admins" element={<Admins />} />
+              <Route path="reports" element={<Reports />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

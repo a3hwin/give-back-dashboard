@@ -359,29 +359,16 @@ const Categories = () => {
                         </div>
                       )}
                       
-                      <div>
-                        <h4 className="font-medium mb-3 text-foreground">Items in this category:</h4>
-                      {categoryItems.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {categoryItems.map((item) => (
-                            <div key={item.id} className="p-3 bg-muted rounded-lg">
-                              <h5 className="font-medium text-sm text-foreground">{item.name}</h5>
-                              <p className="text-xs text-muted-foreground mt-1">{item.location}</p>
-                              <Badge 
-                                variant={
-                                  item.status === 'Listed' ? 'default' :
-                                  item.status === 'Requested' ? 'secondary' : 'outline'
-                                }
-                                className="mt-2 text-xs"
-                              >
-                                {item.status}
-                              </Badge>
-                            </div>
-                          ))}
-                        </div>
-                        ) : (
-                          <p className="text-muted-foreground text-sm">No items in this category yet.</p>
-                        )}
+                       <div className="flex justify-end">
+                         <Button 
+                           variant="outline" 
+                           size="sm"
+                           onClick={() => window.location.href = '/items'}
+                           className="hover:bg-eco-green-light hover:text-eco-green"
+                         >
+                           <Package className="h-3 w-3 mr-1" />
+                           View Items
+                         </Button>
                       </div>
                     </div>
                   </CardContent>

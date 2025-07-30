@@ -12,7 +12,8 @@ import {
   LogOut, 
   Menu,
   X,
-  Leaf
+  Leaf,
+  BarChart3
 } from 'lucide-react';
 
 const navigationItems = [
@@ -22,6 +23,7 @@ const navigationItems = [
   { name: 'Transactions', href: '/transactions', icon: ArrowRightLeft },
   { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
   { name: 'Admins', href: '/admins', icon: Users },
+  { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];
 
 const Sidebar = () => {
