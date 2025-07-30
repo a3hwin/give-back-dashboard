@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import { mockCategories, Category, SubCategory, mockItems } from '@/data/mockDat
 import { Plus, ChevronDown, ChevronRight, Edit, Package, Star } from 'lucide-react';
 
 const Categories = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>(mockCategories);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
@@ -360,12 +362,12 @@ const Categories = () => {
                       )}
                       
                        <div className="flex justify-end">
-                         <Button 
-                           variant="outline" 
-                           size="sm"
-                           onClick={() => window.location.href = '/items'}
-                           className="hover:bg-eco-green-light hover:text-eco-green"
-                         >
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => navigate('/items')}
+                            className="hover:bg-eco-green-light hover:text-eco-green"
+                          >
                            <Package className="h-3 w-3 mr-1" />
                            View Items
                          </Button>

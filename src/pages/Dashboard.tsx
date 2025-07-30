@@ -2,9 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { getStatsData, mockItems, mockTransactions } from '@/data/mockData';
 import { Users, Package, ArrowRightLeft, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const stats = getStatsData();
 
   const pieData = [
@@ -93,7 +95,7 @@ const Dashboard = () => {
               <CardTitle>Recent Listings</CardTitle>
               <CardDescription>Latest items added to the platform</CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={() => window.location.href = '/items'}>
+            <Button variant="outline" size="sm" onClick={() => navigate('/items')}>
               View All
             </Button>
           </CardHeader>
@@ -124,7 +126,7 @@ const Dashboard = () => {
               <CardTitle>Recent Transactions</CardTitle>
               <CardDescription>Latest completed exchanges</CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={() => window.location.href = '/transactions'}>
+            <Button variant="outline" size="sm" onClick={() => navigate('/transactions')}>
               View All
             </Button>
           </CardHeader>
