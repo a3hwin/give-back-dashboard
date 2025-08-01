@@ -16,17 +16,28 @@ export interface Category {
   subCategories?: SubCategory[];
 }
 
+export interface ItemRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  requestDate: string;
+  message?: string;
+}
+
 export interface Item {
   id: string;
   name: string;
   description: string;
   category: string;
+  subCategory?: string;
   location: string;
   datePosted: string;
   status: 'Listed' | 'Requested' | 'Freecycled';
   donorName: string;
   requestCount?: number;
   image?: string;
+  requests?: ItemRequest[];
 }
 
 export interface User {
@@ -150,30 +161,76 @@ export const mockItems: Item[] = [
     name: 'Wooden Dining Table',
     description: 'Beautiful oak dining table, seats 6 people. Minor scratches but very sturdy.',
     category: 'Furniture',
+    subCategory: 'Indoor Furniture',
     location: 'San Francisco, CA',
     datePosted: '2024-01-15',
     status: 'Listed',
     donorName: 'Sarah Chen',
     requestCount: 3,
-    image: 'https://images.unsplash.com/photo-1721322800607-80112131f5a1?auto=format&fit=crop&w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1721322800607-80112131f5a1?auto=format&fit=crop&w=800&q=80',
+    requests: [
+      {
+        id: 'req1',
+        userId: 'u1',
+        userName: 'John Smith',
+        userEmail: 'john.smith@email.com',
+        requestDate: '2024-01-16',
+        message: 'Perfect for my new apartment!'
+      },
+      {
+        id: 'req2',
+        userId: 'u2',
+        userName: 'Maria Garcia',
+        userEmail: 'maria.g@email.com',
+        requestDate: '2024-01-17',
+        message: 'Would love this for family dinners.'
+      },
+      {
+        id: 'req3',
+        userId: 'u3',
+        userName: 'David Lee',
+        userEmail: 'david.lee@email.com',
+        requestDate: '2024-01-18'
+      }
+    ]
   },
   {
     id: '2',
     name: 'iPhone 12 Pro',
     description: 'Excellent condition iPhone 12 Pro, 128GB. Includes charger and case.',
     category: 'Electronics',
+    subCategory: 'Mobile Devices',
     location: 'New York, NY',
     datePosted: '2024-01-14',
     status: 'Requested',
     donorName: 'Mike Johnson',
     requestCount: 8,
-    image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=800&q=80',
+    requests: [
+      {
+        id: 'req4',
+        userId: 'u4',
+        userName: 'Anna Wilson',
+        userEmail: 'anna.w@email.com',
+        requestDate: '2024-01-15',
+        message: 'Need this for work!'
+      },
+      {
+        id: 'req5',
+        userId: 'u5',
+        userName: 'Tom Chen',
+        userEmail: 'tom.chen@email.com',
+        requestDate: '2024-01-15',
+        message: 'My old phone broke, this would be perfect.'
+      }
+    ]
   },
   {
     id: '3',
     name: 'Harry Potter Collection',
     description: 'Complete set of Harry Potter books in great condition.',
     category: 'Books',
+    subCategory: 'Fiction',
     location: 'Austin, TX',
     datePosted: '2024-01-12',
     status: 'Freecycled',
@@ -185,18 +242,37 @@ export const mockItems: Item[] = [
     name: 'Winter Jacket',
     description: 'Warm winter jacket, size L. Gently used, perfect for cold weather.',
     category: 'Clothing',
+    subCategory: 'Outerwear',
     location: 'Seattle, WA',
     datePosted: '2024-01-10',
     status: 'Listed',
     donorName: 'Alex Rodriguez',
     requestCount: 2,
-    image: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80'
+    image: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80',
+    requests: [
+      {
+        id: 'req6',
+        userId: 'u6',
+        userName: 'Lisa Park',
+        userEmail: 'lisa.park@email.com',
+        requestDate: '2024-01-11',
+        message: 'Perfect size for me!'
+      },
+      {
+        id: 'req7',
+        userId: 'u7',
+        userName: 'Mike Davis',
+        userEmail: 'mike.davis@email.com',
+        requestDate: '2024-01-12'
+      }
+    ]
   },
   {
     id: '5',
     name: 'Coffee Maker',
     description: 'Automatic drip coffee maker, works perfectly. Great for morning coffee.',
     category: 'Kitchen Items',
+    subCategory: 'Appliances',
     location: 'Portland, OR',
     datePosted: '2024-01-09',
     status: 'Freecycled',

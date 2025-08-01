@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ImagePreviewDialog } from '@/components/ImagePreviewDialog';
+import { RequestDetailsDialog } from '@/components/RequestDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
 import { mockItems, Item } from '@/data/mockData';
 import { Search, Package, MapPin, Calendar, User, Edit, Trash2 } from 'lucide-react';
@@ -137,6 +139,7 @@ const Items = () => {
                   <TableHead>Item Name</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead>Category</TableHead>
+                  <TableHead>Sub Category</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Donor</TableHead>
                   <TableHead>Date Listed</TableHead>
@@ -174,6 +177,15 @@ const Items = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      {item.subCategory ? (
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          {item.subCategory}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center space-x-1 text-muted-foreground">
                         <MapPin className="h-3 w-3" />
                         <span className="text-sm">{item.location}</span>
@@ -201,9 +213,35 @@ const Items = () => {
                     <TableCell>
                       <div className="text-center">
                         {item.status === 'Listed' || item.status === 'Requested' ? (
-                          <Badge variant="secondary">
-                            {item.requestCount || 0}
-                          </Badge>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div>
+                                  <RequestDetailsDialog requests={item.requests || []}>
+                                    <Badge 
+                                      variant="secondary" 
+                                      className="cursor-pointer hover:bg-secondary/80 transition-colors"
+                                    >
+                                      {item.requestCount || 0}
+                                    </Badge>
+                                  </RequestDetailsDialog>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <div className="space-y-1">
+                                  {item.requests && item.requests.length > 0 ? (
+                                    item.requests.map((request, index) => (
+                                      <div key={request.id} className="text-sm">
+                                        {index + 1}. {request.userName}
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <div className="text-sm">No requests yet</div>
+                                  )}
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         ) : (
                           <span className="text-muted-foreground text-sm">-</span>
                         )}
