@@ -6,17 +6,24 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { ImagePreviewDialog } from '@/components/ImagePreviewDialog';
 import { RequestDetailsDialog } from '@/components/RequestDetailsDialog';
+import { ImageUpload } from '@/components/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { mockItems, Item } from '@/data/mockData';
-import { Search, Package, MapPin, Calendar, User, Edit, Trash2 } from 'lucide-react';
+import { Search, Package, MapPin, Calendar, User, Star, Check, X, Edit as EditIcon, Trash2 } from 'lucide-react';
 
 const Items = () => {
   const [items, setItems] = useState<Item[]>(mockItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [itemOfTheDay, setItemOfTheDay] = useState<Item | null>(mockItems[0]);
+  const [isItemOfDayDialogOpen, setIsItemOfDayDialogOpen] = useState(false);
+  const [selectedItemForDay, setSelectedItemForDay] = useState<string>('');
   const { toast } = useToast();
 
   const filteredItems = items.filter(item => {
@@ -59,6 +66,45 @@ const Items = () => {
     });
   };
 
+  const handleApproveItem = (itemId: string) => {
+    setItems(prev => prev.map(item => 
+      item.id === itemId ? { ...item, status: 'Listed' } : item
+    ));
+    toast({
+      title: "Item Approved",
+      description: "Item has been approved and is now listed.",
+    });
+  };
+
+  const handleRejectItem = (itemId: string) => {
+    setItems(prev => prev.filter(item => item.id !== itemId));
+    toast({
+      title: "Item Rejected",
+      description: "Item has been rejected and removed.",
+      variant: "destructive",
+    });
+  };
+
+  const handleSetItemOfDay = () => {
+    const item = items.find(i => i.id === selectedItemForDay);
+    if (item) {
+      setItemOfTheDay(item);
+      setIsItemOfDayDialogOpen(false);
+      toast({
+        title: "Item of the Day Set",
+        description: `"${item.name}" is now the Item of the Day.`,
+      });
+    }
+  };
+
+  const handleRemoveItemOfDay = () => {
+    setItemOfTheDay(null);
+    toast({
+      title: "Removed",
+      description: "Item of the Day has been removed.",
+    });
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -68,6 +114,100 @@ const Items = () => {
           Manage all items listed on the platform
         </p>
       </div>
+
+      {/* Item of the Day Section */}
+      <Card className="shadow-card border-2 border-eco-green">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center space-x-2">
+              <Star className="h-5 w-5 text-eco-green fill-eco-green" />
+              <span>Item of the Day</span>
+            </CardTitle>
+            <div className="flex space-x-2">
+              <Dialog open={isItemOfDayDialogOpen} onOpenChange={setIsItemOfDayDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <EditIcon className="h-3 w-3 mr-1" />
+                    {itemOfTheDay ? 'Change' : 'Set'}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Set Item of the Day</DialogTitle>
+                    <DialogDescription>
+                      Choose an item to feature as the Item of the Day
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Select Item</Label>
+                      <Select value={selectedItemForDay} onValueChange={setSelectedItemForDay}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose an item" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {items.map(item => (
+                            <SelectItem key={item.id} value={item.id}>
+                              {item.name} - {item.category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => setIsItemOfDayDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleSetItemOfDay} className="bg-gradient-eco hover:opacity-90">
+                        Set Item
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              {itemOfTheDay && (
+                <Button variant="outline" size="sm" onClick={handleRemoveItemOfDay}>
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Remove
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {itemOfTheDay ? (
+            <div className="flex items-center space-x-4 p-4 bg-eco-green-light rounded-lg">
+              {itemOfTheDay.image ? (
+                <img 
+                  src={itemOfTheDay.image} 
+                  alt={itemOfTheDay.name}
+                  className="w-20 h-20 rounded object-cover"
+                />
+              ) : (
+                <div className="w-20 h-20 bg-muted rounded flex items-center justify-center">
+                  <Package className="h-8 w-8 text-muted-foreground" />
+                </div>
+              )}
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-foreground">{itemOfTheDay.name}</h3>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Badge variant="outline" className="bg-eco-green text-white border-eco-green">
+                    {itemOfTheDay.category}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    Listed on {new Date(itemOfTheDay.datePosted).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Star className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+              <p className="text-muted-foreground">No Item of the Day set. Click "Set" to choose one.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <Card className="shadow-card">
@@ -145,7 +285,7 @@ const Items = () => {
                   <TableHead>Date Listed</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Requests</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Approve/Reject</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -252,16 +392,20 @@ const Items = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleEditItem(item.id)}
+                          onClick={() => handleApproveItem(item.id)}
+                          className="hover:bg-green-50 hover:text-green-700 hover:border-green-300"
                         >
-                          <Edit className="h-3 w-3" />
+                          <Check className="h-3 w-3 mr-1" />
+                          Approve
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDeleteItem(item.id)}
+                          onClick={() => handleRejectItem(item.id)}
+                          className="hover:bg-red-50 hover:text-red-700 hover:border-red-300"
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <X className="h-3 w-3 mr-1" />
+                          Reject
                         </Button>
                       </div>
                     </TableCell>

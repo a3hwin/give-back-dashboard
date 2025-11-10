@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { mockTransactions, mockCategories, mockItems } from '@/data/mockData';
+import { mockTransactions, mockCategories, mockItems, mockReportedUsers } from '@/data/mockData';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -21,7 +21,8 @@ import {
   Package,
   Users,
   Clock,
-  Eye
+  Eye,
+  AlertTriangle
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
@@ -450,6 +451,58 @@ const Reports = () => {
                       <TableCell>{item.city}</TableCell>
                       <TableCell>
                         <Badge variant="destructive">{item.age}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Reported Users Section */}
+          <Card className="shadow-card mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <AlertTriangle className="h-5 w-5 text-eco-green" />
+                <span>Reported Users</span>
+              </CardTitle>
+              <CardDescription>Users reported by the community</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Reported User Name</TableHead>
+                    <TableHead>Reporter User Name</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Times Reported</TableHead>
+                    <TableHead>Date of Last Report</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mockReportedUsers.map((report) => (
+                    <TableRow key={report.id} className="hover:bg-accent/50 transition-colors">
+                      <TableCell className="font-medium">{report.reportedUserName}</TableCell>
+                      <TableCell>{report.reporterUserName}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                          {report.reason}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={
+                          report.timesReported >= 5 ? 'bg-red-100 text-red-800' :
+                          report.timesReported >= 3 ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }>
+                          {report.timesReported}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-3 w-3" />
+                          <span className="text-sm">{new Date(report.lastReportDate).toLocaleDateString()}</span>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

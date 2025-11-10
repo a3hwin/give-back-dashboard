@@ -11,7 +11,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ImageUpload } from '@/components/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { mockCategories, Category, SubCategory, mockItems } from '@/data/mockData';
-import { Plus, ChevronDown, ChevronRight, Edit, Package, Star } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, Edit, Package, Star, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -26,7 +27,10 @@ const Categories = () => {
     points: 1
   });
   const [isAddSubCategoryDialogOpen, setIsAddSubCategoryDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditSubDialogOpen, setIsEditSubDialogOpen] = useState(false);
   const [selectedCategoryForSub, setSelectedCategoryForSub] = useState<string>('');
+  const [editingSubCategory, setEditingSubCategory] = useState<SubCategory | null>(null);
   const [newSubCategory, setNewSubCategory] = useState({
     title: '',
     description: '',
@@ -123,6 +127,122 @@ const Categories = () => {
 
   const getCategoryItems = (categoryTitle: string) => {
     return mockItems.filter(item => item.category === categoryTitle);
+  };
+
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    setNewCategory({
+      title: category.title,
+      description: category.description,
+      image: category.image,
+      points: category.points
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateCategory = () => {
+    if (!editingCategory || !newCategory.title || !newCategory.description || !newCategory.image) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCategories(prev => 
+      prev.map(cat => 
+        cat.id === editingCategory.id 
+          ? { ...cat, ...newCategory }
+          : cat
+      )
+    );
+    
+    setIsEditDialogOpen(false);
+    setEditingCategory(null);
+    setNewCategory({ title: '', description: '', image: '', points: 1 });
+    
+    toast({
+      title: "Category Updated",
+      description: `Category "${newCategory.title}" has been updated.`,
+    });
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    setCategories(prev => prev.filter(cat => cat.id !== categoryId));
+    toast({
+      title: "Category Deleted",
+      description: `Category "${category?.title}" has been deleted.`,
+    });
+  };
+
+  const handleEditSubCategory = (subCategory: SubCategory, categoryId: string) => {
+    setEditingSubCategory(subCategory);
+    setSelectedCategoryForSub(categoryId);
+    setNewSubCategory({
+      title: subCategory.title,
+      description: subCategory.description,
+      image: subCategory.image,
+      points: subCategory.points
+    });
+    setIsEditSubDialogOpen(true);
+  };
+
+  const handleUpdateSubCategory = () => {
+    if (!editingSubCategory || !newSubCategory.title || !newSubCategory.description || !newSubCategory.image) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCategories(prev => 
+      prev.map(cat => 
+        cat.id === selectedCategoryForSub 
+          ? {
+              ...cat,
+              subCategories: cat.subCategories?.map(sub => 
+                sub.id === editingSubCategory.id 
+                  ? { ...sub, ...newSubCategory }
+                  : sub
+              )
+            }
+          : cat
+      )
+    );
+    
+    setIsEditSubDialogOpen(false);
+    setEditingSubCategory(null);
+    setNewSubCategory({ title: '', description: '', image: '', points: 1 });
+    
+    toast({
+      title: "Sub-Category Updated",
+      description: `Sub-category "${newSubCategory.title}" has been updated.`,
+    });
+  };
+
+  const handleDeleteSubCategory = (subCategoryId: string, categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    const subCategory = category?.subCategories?.find(s => s.id === subCategoryId);
+    
+    setCategories(prev => 
+      prev.map(cat => 
+        cat.id === categoryId 
+          ? {
+              ...cat,
+              subCategories: cat.subCategories?.filter(sub => sub.id !== subCategoryId)
+            }
+          : cat
+      )
+    );
+    
+    toast({
+      title: "Sub-Category Deleted",
+      description: `Sub-category "${subCategory?.title}" has been deleted.`,
+    });
   };
 
   return (
@@ -253,6 +373,61 @@ const Categories = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Sub-Category Dialog */}
+        <Dialog open={isEditSubDialogOpen} onOpenChange={setIsEditSubDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Sub-Category</DialogTitle>
+              <DialogDescription>
+                Update the sub-category details.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-sub-title">Title *</Label>
+                <Input
+                  id="edit-sub-title"
+                  value={newSubCategory.title}
+                  onChange={(e) => setNewSubCategory({...newSubCategory, title: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-sub-description">Description *</Label>
+                <Textarea
+                  id="edit-sub-description"
+                  value={newSubCategory.description}
+                  onChange={(e) => setNewSubCategory({...newSubCategory, description: e.target.value})}
+                />
+              </div>
+              <ImageUpload
+                value={newSubCategory.image}
+                onChange={(value) => setNewSubCategory({...newSubCategory, image: value})}
+                label="Sub-Category Image *"
+                placeholder="Upload sub-category image"
+              />
+              <div className="space-y-2">
+                <Label htmlFor="edit-sub-points">Points</Label>
+                <Input
+                  id="edit-sub-points"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={newSubCategory.points}
+                  onChange={(e) => setNewSubCategory({...newSubCategory, points: parseInt(e.target.value) || 1})}
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setIsEditSubDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateSubCategory} className="bg-gradient-eco hover:opacity-90">
+                  Update Sub-Category
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Categories List */}
@@ -307,6 +482,41 @@ const Categories = () => {
                             <Plus className="h-3 w-3 mr-1" />
                             Add Sub
                           </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditCategory(category);
+                            }}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{category.title}"? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteCategory(category.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Label htmlFor={`points-${category.id}`} className="text-sm">Points:</Label>
@@ -340,19 +550,51 @@ const Categories = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                             {category.subCategories.map((subCategory) => (
                               <div key={subCategory.id} className="p-3 bg-muted rounded-lg border">
-                                <div className="flex items-start space-x-3">
-                                  <img 
-                                    src={subCategory.image} 
-                                    alt={subCategory.title}
-                                    className="w-8 h-8 rounded object-cover"
-                                  />
-                                  <div className="flex-1">
-                                    <h5 className="font-medium text-sm text-foreground">{subCategory.title}</h5>
-                                    <p className="text-xs text-muted-foreground mt-1">{subCategory.description}</p>
-                                    <Badge variant="secondary" className="mt-2 text-xs bg-eco-green-light text-eco-green">
-                                      <Star className="h-3 w-3 mr-1" />
-                                      {subCategory.points} pts
-                                    </Badge>
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-start space-x-3">
+                                    <img 
+                                      src={subCategory.image} 
+                                      alt={subCategory.title}
+                                      className="w-8 h-8 rounded object-cover"
+                                    />
+                                    <div className="flex-1">
+                                      <h5 className="font-medium text-sm text-foreground">{subCategory.title}</h5>
+                                      <p className="text-xs text-muted-foreground mt-1">{subCategory.description}</p>
+                                      <Badge variant="secondary" className="mt-2 text-xs bg-eco-green-light text-eco-green">
+                                        <Star className="h-3 w-3 mr-1" />
+                                        {subCategory.points} pts
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleEditSubCategory(subCategory, category.id)}
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="ghost" size="sm">
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Sub-Category</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to delete "{subCategory.title}"? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleDeleteSubCategory(subCategory.id, category.id)}>
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
                                   </div>
                                 </div>
                               </div>

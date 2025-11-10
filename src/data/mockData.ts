@@ -399,6 +399,22 @@ export const mockAdmins: Admin[] = [
   }
 ];
 
+export interface ReportedUser {
+  id: string;
+  reportedUserName: string;
+  reporterUserName: string;
+  reason: string;
+  timesReported: number;
+  lastReportDate: string;
+}
+
+export const mockReportedUsers: ReportedUser[] = [
+  { id: '1', reportedUserName: 'John Doe', reporterUserName: 'Sarah Smith', reason: 'No-show for pickup', timesReported: 3, lastReportDate: '2024-01-15' },
+  { id: '2', reportedUserName: 'Jane Smith', reporterUserName: 'Bob Johnson', reason: 'Item not as described', timesReported: 1, lastReportDate: '2024-01-14' },
+  { id: '3', reportedUserName: 'Mike Wilson', reporterUserName: 'Alice Johnson', reason: 'Spam listings', timesReported: 5, lastReportDate: '2024-01-16' },
+  { id: '4', reportedUserName: 'Emily Davis', reporterUserName: 'John Doe', reason: 'Rude behavior', timesReported: 2, lastReportDate: '2024-01-13' },
+];
+
 export const getStatsData = () => ({
   totalUsers: mockUsers.length,
   totalItems: mockItems.length,
